@@ -33,8 +33,8 @@ function redraw(){
 }
 
 function drawcurves(number){
-$('#svg').attr('height', $('#progress_card').height());
-$('#svg').attr('width', $('#progress_card').width());
+$('#svg').attr('height', $('#progress_map').height());
+$('#svg').attr('width', $('#progress_map').width());
 
 if (window.innerWidth > 768) {
     var div1 = $('#prog-1');
