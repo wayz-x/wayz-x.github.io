@@ -52,7 +52,7 @@ https://denmkit.github.io/
     --h3-font-size:         28px;
     --h4-font-size:         24px;
     --h5-font-size:         22px;
-    --h6-font-size:         22px;
+    --h6-font-size:         20px;
     --p-font-size:          18px;
     --base-font-size:       16px;
     --menu-font-size:       14px;
@@ -642,12 +642,16 @@ https://denmkit.github.io/
     color: var(--primary-color);
   }
 
+  .icon {
+    display: none !important;
+  }
 
   /*---------------------------------------
      RESPONSIVE STYLES              
   -----------------------------------------*/
 
   @media screen and (max-width: 992px) {
+
 
     .section {
       padding: 5rem 0;
@@ -675,8 +679,54 @@ https://denmkit.github.io/
   }
 
   @media screen and (max-width: 652px) {
+
+    .section {
+      padding: 2rem 0;
+    }
+
     h2 {
       font-size: 28px;
+    }
+
+    h4 {
+      font-size: var(--h6-font-size);
+    }
+
+    .tm-paging-item {
+      font-size: var(--h6-font-size) !important;
+      padding: 0;
+    }
+
+    /* .ic-phone{
+      content:url(/images/icons/phone.svg);
+      width: var(--h2-font-size);
+      filter: invert(38%) sepia(5%) saturate(264%) hue-rotate(314deg) brightness(95%) contrast(81%);
+      opacity: .55;
+
+    }
+
+    .ic-phone:hover {
+      filter: invert(40%) sepia(43%) saturate(3121%) hue-rotate(172deg) brightness(101%) contrast(101%);
+    } */
+
+    /* .mail,
+    .text-phone {
+      display: none !important;
+    } */
+
+    /* .icon {
+      display: inline !important;
+      margin-top: 30px;
+    } */
+
+    .about-working-hours {
+      border-left: 0;
+      padding: 0;
+    }
+
+    .social-icons-header {
+      padding: 0px 6px !important;
+      /* font-size: var(--h2-font-size) !important; */
     }
   }
 
@@ -686,8 +736,6 @@ https://denmkit.github.io/
     h1 {
       font-size: 38px;
     }
-
-    
 
     .about-working-hours {
       border-left: 1;
@@ -785,7 +833,7 @@ https://denmkit.github.io/
     padding: 0px 16px;
     display: inline-block;
     font-size: var(--h2-font-size);
-    color: var(--primary-color)
+    /* color: var(--primary-color) */
   }
 
   .social-icons-header-mini {
@@ -906,6 +954,8 @@ https://denmkit.github.io/
     .ic-board{
       content: url(/images/icons/board.svg); 
     }
+
+    
 
     #card:hover,
     #prog-1:hover,
