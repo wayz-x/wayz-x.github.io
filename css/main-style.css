@@ -995,3 +995,18 @@ https://denmkit.github.io/
     margin-left: 0;
     margin-right: 0;
   }
+
+  .table td:first-child,
+  .table td:last-child {
+    width: 1%;
+    white-space: nowrap;
+  }
+
+  .dots li::before {
+    content: "\2022";
+    color: var(--gray-color);
+    font-weight: bold;
+    display: inline-block; 
+    width: 1em;
+    /* margin-left: -1em; */
+  }
