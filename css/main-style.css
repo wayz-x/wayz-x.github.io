@@ -317,8 +317,8 @@ https://denmkit.github.io/
     border: 0;
     padding: 0;
     cursor: pointer;
-    margin: 0 10px 0 0;
-    width: 30px;
+    margin: 0 10px 0 10px;
+    width: 230px;
     height: 35px;
     outline: none;
   }
@@ -350,10 +350,11 @@ https://denmkit.github.io/
   .navbar-toggler .navbar-toggler-icon {
     background: var(--primary-color);
     transition: background 10ms 300ms ease;
-    display: block;
+    /* display: block; */
     width: 30px;
     height: 2px;
     position: relative;
+    align-self: center;
   }
 
   .navbar-toggler .navbar-toggler-icon::before,
@@ -377,6 +378,14 @@ https://denmkit.github.io/
   .navbar-toggler .navbar-toggler-icon::after {
     top: 8px;
   }
+
+  .navbar-toggler .button-label {
+    display: block;
+    /* float: left; */
+    font-weight: bold;
+    /* line-height: 14px; */
+    padding-right: 20px;
+}
 
   /*---------------------------------------
      HERO              
@@ -773,6 +782,16 @@ https://denmkit.github.io/
       padding: 0px 6px !important;
       font-size: 28px !important;
     }
+    .social-icons-header-mini {
+      font-size: 20px !important;
+    }
+
+    p {
+      color: var(--p-color);
+      font-size: var(--menu-font-size);
+      font-weight: var(--font-weight-light);
+      line-height: 1.5em;
+    }
   }
 
   .tm-paging-links {
@@ -799,13 +818,13 @@ https://denmkit.github.io/
     border-bottom: 1px solid transparent;
   }
   
-  .tm-paging-link:hover {
+  /* .tm-paging-link:hover {
     border-bottom: 1px solid var(--primary-color);
   }
-  
+   */
   .tm-paging-link.active {
     font-weight: bold;
-    border-bottom: 2px solid var(--primary-color);
+    /* border-bottom: 2px solid var(--primary-color); */
     color: var(--primary-color); 
   }
 
@@ -891,7 +910,7 @@ https://denmkit.github.io/
   .img-logo {
     margin: 8px;
     width: 100%;
-    max-height: 140px;
+    max-height: 80px;
     min-height: 60px;
     object-fit: contain;
     object-position: right;
@@ -901,8 +920,8 @@ https://denmkit.github.io/
     .img-logo-mini {
       margin: 8px;
       width: 100%;
-      max-height: 80px;
-      min-height: 60px;
+      max-height: 60px;
+      min-height: 40px;
       object-fit: contain;
       object-position: left;
      
