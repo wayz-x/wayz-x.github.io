@@ -998,19 +998,21 @@ https://denmkit.github.io/
 
   .table td:first-child,
   .table td:last-child {
-    width: 1%;
+    width: 0.5%;
     white-space: nowrap;
   }
 
-  .dots li::before {
+  .dots p::before {
     content: "\2022";
-    color: var(--gray-color);
-    font-weight: bold;
     display: inline-block; 
-    width: 1em;
+    width: 0.8em;
+
     /* margin-left: -1em; */
   }
 
   .copyright-text {
     color: var(--gray-color);
+  }
+  .text-white small {
+    font-size: 90%;
   }
