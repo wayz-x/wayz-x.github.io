@@ -1010,3 +1010,7 @@ https://denmkit.github.io/
     width: 1em;
     /* margin-left: -1em; */
   }
+
+  .copyright-text {
+    color: var(--gray-color);
+  }
