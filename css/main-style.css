@@ -546,6 +546,12 @@ https://denmkit.github.io/
     opacity: 0.85;
   }
 
+  .team-info p {
+    font-size: var(--menu-font-size);
+    font-weight: var(--font-weight-light);
+    opacity: 0.85;
+  }
+
 
   /*---------------------------------------
      CONTACT              
@@ -1014,5 +1020,6 @@ https://denmkit.github.io/
     color: var(--gray-color);
   }
   .text-white small {
+    color: var(--gray-color);
     font-size: 90%;
   }
