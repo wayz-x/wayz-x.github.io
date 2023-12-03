@@ -381,6 +381,7 @@ https://denmkit.github.io/
 
   .navbar-toggler .button-label {
     display: block;
+    font-size: var(--h5-font-size)
     /* float: left; */
     font-weight: bold;
     /* line-height: 14px; */
@@ -722,27 +723,27 @@ https://denmkit.github.io/
     }
 
     #newbie-img{
-      content:url("/images/courses/wide-newbie.png");
+      content:url("/images/cources/wide-newbie.png");
     }
 
     #carving-img{
-      content:url("/images/courses/wide-carving.png");
+      content:url("/images/cources/wide-carving.png");
     }
 
     #base-img{
-      content:url("/images/courses/wide-base.png");
+      content:url("/images/cources/wide-base.png");
     }
 
     #upper-img{
-      content:url("/images/courses/wide-upper.png");
+      content:url("/images/cources/wide-upper.png");
     }
 
     #flat-img{
-      content:url("/images/courses/wide-flat.png");
+      content:url("/images/cources/wide-flat.png");
     }
 
     #uneven-img{
-      content:url("/images/courses/wide-uneven.png");
+      content:url("/images/cources/wide-uneven.png");
     }
     .text-phone {
       margin-right: 16px;
