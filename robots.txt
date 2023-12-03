@@ -1,0 +1,5 @@
+User-agent: * #указывает, для каких роботов установлены директивы
+Disallow: /header.html
+Disallow: /footer.html
+Disallow: /navbar.html
+Sitemap: https://wayz-x.github.io/sitemap.xml # указывает роботу на файл Sitemap для сайта
