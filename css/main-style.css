@@ -1030,10 +1030,15 @@ https://denmkit.github.io/
   }
  .input {
   height: 100%;
-  width: 5em;
+  width: 6em;
   padding: 0px .8em;
   border-radius: .4em;
   border: 0.1em solid var(--primary-color);
+ }
+
+ .input:focus {
+  outline: none !important;
+  border: .2em solid var(--primary-color);
  }
 
  .alert {
