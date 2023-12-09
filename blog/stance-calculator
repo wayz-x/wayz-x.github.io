@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Курс "Фристайл"  | Сноуборд школа | Алматы</title>
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Сноуборд курс &laquo;Flat фристайл&raquo;">
+    <meta property="og:site_name" content="Wayz-X">
+    <meta property="og:url" content="https://wayz-x.github.io/cources/flat">
+    <meta property="og:description" content="Научимся базовым трюкам — ollie и&nbsp;nollie, слайды и&nbsp;прессы, вращения на снегу и&nbsp;в&nbsp;прыжке!">
+    <meta property="og:image" content="https://wayz-x.github.io/images/cources/og-flat.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="968">
+    <meta property="og:image:height" content="504">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="description" content="Инструкторы по сноуборду в&nbsp;Алматы">
+    <meta name="keywords" content="сноуборд, алматы, казахстан, инструктор, шимбулак, чимбулак, shymbulak, oi-qaragai, лесная сказка, научиться, тренер по сноуборду, инструктор по сноуборду">
+    <meta name="author" content="Denmkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/aos.css">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="/css/main-style.css">
+    <!--
+    Wayz.X 2023 by Denmkit https://denmkit.github.io/
+    -->
+    <!-- Yandex.Metrika counter -->
+    <script type="text/javascript" >
+      (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+      m[i].l=1*new Date();
+      for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+      k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+      (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+      ym(95755518, "init", {
+          clickmap:true,
+          trackLinks:true,
+          accurateTrackBounce:true
+      });
+    </script>
+    <noscript><div><img src="https://mc.yandex.ru/watch/95755518" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+    <!-- /Yandex.Metrika counter -->
+  </head>
+  <body data-spy="scroll" data-target="#navbarNav" data-offset="50" >
+    <!-- HEADER -->
+    <section class="feature" id="header"></section>
+    <!-- ABOUT -->
+    <section class="about section" id="stance">
+        <div class="container">
+        <div class="row">
+            <div class="mt-lg-5 mb-lg-0 mb-4 col-lg-6 col-md-10 mx-auto col-12">
+            <h2 class="mb-4" data-aos="fade-up" data-aos-delay="300">Ширина стойки</h2>
+            <p>Частый вопрос, возникающий не только у&nbsp;новичков, но и&nbsp;у&nbsp;опытных райдеров.</p>
+            <p>Чем шире стойка, тем больше ваша продольная устойчивость. Но при этом снижается диапазон работы в&nbsp;коленях, что негативно влияет на повороты. Широкая стойка больше подходит для джиббинга.</p>
+            <p>Узкая стойка повышает мобильность в&nbsp;коленях, но снижает устойчивость. Так что нам приходится искать компромисс между маневренностью и&nbsp;устойчивостью.</p>
+            <p>Оптимальной шириной стойки на сноуборде считается расстояние между креплениями равное длине от локтя до костяшек кулака вашей руки</p>
+            <p>Но крепления бывают разной формы и&nbsp;с&nbsp;разной толщиной корпуса. По этому мы предпочитаем измерять ширину между центрами креплений. Которую легко высчитать, умножив свой рост в&nbsp;сантиметрах на 0.29 для мужчин и&nbsp;0.27 для женщин.</p>
+            <p>Либо <b>воспользоваться</b> нашим <b>калькулятором ширины</b> стойки.</p>
+            <p><b>Важно помнить</b>, что все люди разные и&nbsp;под одну формулу всех не подогнать. Если в&nbsp;оптимальной ширине стойки вам не комфортно, то попробуйте сделать её уже или шире на 1&nbsp;сантиметр.</p>
+            </div>
+            <div class="ml-lg-auto col-lg-6 col-md-12 col-sm-12 col-12" data-aos="fade-up" data-aos-delay="600" id="stance_calc">
+            <div class="team-thumb"> <img src="/images/blog/stance.png" class="img-fluid" alt="Ширина стойки">
+                <div class="team-info d-flex flex-column">
+                <h3>Калькулятор стойки</h3>
+                <div class="row mt-sm-4 mt-0 justify-content-center justify-content-lg-evenly" data-aos="fade-up" data-aos-delay="700">
+                    <div class="mr-1 mt-sm-0 mt-3">
+                        <button class="btn custom-btn bordered pol" id="female">Жен</button>
+                        <button class="btn custom-btn bordered pol" id="male">Муж</button>
+                     </div>
+                     <div class="d-flex mt-sm-0 mt-3">
+                        <input id="height" class="input mr-3"/>
+                        <button class="btn custom-btn bg-color" id="calc" onclick="calc()"> = </button>
+                    </div>
+                </div>
+                <div class="text-center">
+                <h2 class="mt-4" id="result"></h3></div>
+                <p class="alert" id="alert">ntct</p>
+                </div>
+            </div>
+            </div>
+        </div>
+        </div>
+    </section>
+
+<!-- FOOTER -->
+      <footer class="site-footer" id="footer"></footer>
+    <!-- SCRIPTS -->
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/aos.js"></script>
+    <script src="/js/smoothscroll.js"></script>
+    <script src="/js/custom.js"></script>
+    <script src="https://kit.fontawesome.com/800bcf0ba0.js" crossorigin="anonymous"></script>
+    <script src="/js/droplist.js"></script>
+    <script src="/js/calc.js"></script>
+    <script>
+      $(document).ready(function () {
+      //adds menu content into any "#menu" element
+        $('#header').load('/header.html');
+        $('#navbar').load('/navbar.html', function() {
+          $('#flat').addClass("active");
+        });
+        $('#footer').load('/footer.html');
+
+        $('.pol').click(function(e){
+          e.preventDefault();
+          
+          $('.pol').removeClass('active');
+          $(this).addClass("active");
+        });
+      });
+    </script>
+  </body>

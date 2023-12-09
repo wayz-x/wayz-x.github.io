@@ -161,19 +161,19 @@ https://denmkit.github.io/
   .custom-btn.bordered:hover,
   .custom-btn.bordered:focus {
     background: var(--primary-color);
-    border-color: transparent;
+    /* border-color: transparent; */
     color: var(--white-color);
-    letter-spacing: 2px;
-    font-weight: var(--font-weight-bold);
+    /* letter-spacing: 2px; */
+    /* font-weight: var(--font-weight-bold); */
   }
   .custom-btn.bg-color:hover,
-  .custom-btn.bg-color:focus{
-    border: 2px solid var(--primary-color);
+  .custom-btn.bg-color:active{
+    /* border: 2px solid var(--primary-color); */
     border-radius: var(--border-radius-small);
     color: var(--primary-color);
     background: transparent;
-    letter-spacing: 2px;
-    font-weight: var(--font-weight-bold);
+    /* letter-spacing: 2px; */
+    /* font-weight: var(--font-weight-bold); */
   }
 
   .bordered {
@@ -182,10 +182,14 @@ https://denmkit.github.io/
     color: var(--primary-color);
   }
 
-  .bg-color {
+  .bg-color, 
+  .active {
+    border: 1px solid var(--primary-color);
     background: var(--primary-color);
     color: var(--white-color);
   }
+
+
 
 
 
@@ -381,7 +385,7 @@ https://denmkit.github.io/
 
   .navbar-toggler .button-label {
     display: block;
-    font-size: var(--h5-font-size)
+    font-size: var(--h5-font-size);
     /* float: left; */
     font-weight: bold;
     /* line-height: 14px; */
@@ -1024,3 +1028,15 @@ https://denmkit.github.io/
     color: var(--gray-color);
     font-size: 90%;
   }
+ .input {
+  height: 100%;
+  width: 5em;
+  padding: 0px .8em;
+  border-radius: .4em;
+  border: 0.1em solid var(--primary-color);
+ }
+
+ .alert {
+  color: red;
+  align-self: center;
+ }
