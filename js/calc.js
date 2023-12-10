@@ -1,4 +1,10 @@
 var op; 
+function handleKeyPress(e){
+    var key=e.keyCode || e.which;
+     if (key==13){
+        calc();
+     }
+   }
 
   // функция расчёта
   function calc() {

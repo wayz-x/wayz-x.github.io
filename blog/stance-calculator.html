@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Курс "Фристайл"  | Сноуборд школа | Алматы</title>
+    <title>Ширина стойки | Сноуборд школа | Алматы</title>
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Сноуборд курс &laquo;Flat фристайл&raquo;">
+    <meta property="og:title" content="Ширина стойки на сноуборде">
     <meta property="og:site_name" content="Wayz-X">
-    <meta property="og:url" content="https://wayz-x.github.io/cources/flat">
-    <meta property="og:description" content="Научимся базовым трюкам — ollie и&nbsp;nollie, слайды и&nbsp;прессы, вращения на снегу и&nbsp;в&nbsp;прыжке!">
-    <meta property="og:image" content="https://wayz-x.github.io/images/cources/og-flat.png">
+    <meta property="og:url" content="https://wayz-x.github.io/blog/stance-calculator">
+    <meta property="og:description" content="Калькулятор ширины стойки от роста сноубордиста.">
+    <meta property="og:image" content="https://wayz-x.github.io/images/blog/og-stance.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="968">
     <meta property="og:image:height" content="504">
@@ -55,13 +55,14 @@
             <p>Частый вопрос, возникающий не только у&nbsp;новичков, но и&nbsp;у&nbsp;опытных райдеров.</p>
             <p>Чем шире стойка, тем больше ваша продольная устойчивость. Но при этом снижается диапазон работы в&nbsp;коленях, что негативно влияет на повороты. Широкая стойка больше подходит для джиббинга.</p>
             <p>Узкая стойка повышает мобильность в&nbsp;коленях, но снижает устойчивость. Так что нам приходится искать компромисс между маневренностью и&nbsp;устойчивостью.</p>
+            <img src="/images/blog/stance-title.png" class="img-fluid my-2" style="touch-action: pinch-zoom" alt="Ширина стойки сноубордиста">
             <p>Оптимальной шириной стойки на сноуборде считается расстояние между креплениями, равное длине от локтя до костяшек кулака вашей руки</p>
             <p>Но крепления бывают разной формы и&nbsp;с&nbsp;разной толщиной корпуса. По этому мы предпочитаем измерять ширину между центрами креплений. Которую легко высчитать, умножив свой рост в&nbsp;сантиметрах на 0.29 для мужчин и&nbsp;0.27 для женщин.</p>
             <p>Либо <b>воспользоваться</b> нашим <b>калькулятором ширины</b> стойки.</p>
             <p><b>Важно помнить</b>, что все люди разные и&nbsp;под одну формулу всех не подогнать. Если в&nbsp;оптимальной ширине стойки вам не комфортно, то попробуйте сделать её уже или шире на 1&nbsp;сантиметр.</p>
             </div>
             <div class="ml-lg-auto col-lg-6 col-md-12 col-sm-12 col-12" data-aos="fade-up" data-aos-delay="600" id="stance_calc">
-            <div class="team-thumb"> <img src="/images/blog/stance.png" class="img-fluid" alt="Ширина стойки">
+            <div class="team-thumb"> <img src="/images/blog/stance.png" class="img-fluid" style="touch-action: pinch-zoom" alt="Ширина стойки">
                 <div class="team-info d-flex flex-column">
                 <h3>Калькулятор стойки</h3>
                 <div class="row mt-sm-4 mt-0 justify-content-center justify-content-lg-evenly" data-aos="fade-up" data-aos-delay="700">
@@ -70,7 +71,7 @@
                         <button class="btn custom-btn bordered pol" id="male">Муж</button>
                      </div>
                      <div class="d-flex mt-sm-0 mt-3">
-                        <input id="height" class="input mr-3" placeholder="рост в см"/>
+                        <input id="height" class="input mr-3" onkeypress="handleKeyPress(event)" placeholder="рост в см"/>
                         <button class="btn custom-btn bg-color" id="calc" onclick="calc()"> = </button>
                     </div>
                 </div>
@@ -95,19 +96,20 @@
     <script src="https://kit.fontawesome.com/800bcf0ba0.js" crossorigin="anonymous"></script>
     <script src="/js/droplist.js"></script>
     <script src="/js/calc.js"></script>
+    <script src="/js/modernizr-touch.js"></script>
     <script>
       $(document).ready(function () {
       //adds menu content into any "#menu" element
         $('#header').load('/header.html');
-        $('#navbar').load('/navbar.html', function() {
-          $('#flat').addClass("active");
-        });
+        $('#navbar').load('/navbar.html');
         $('#footer').load('/footer.html');
 
         $('.pol').click(function(e){
           e.preventDefault();
           
           $('.pol').removeClass('active');
+          $('.pol').addClass('bordered');
+          $(this).removeClass("bordered");
           $(this).addClass("active");
         });
       });

@@ -138,7 +138,7 @@ https://denmkit.github.io/
   /* BUTTON */
 
   .custom-btn {
-    background: transparent;
+    /* background: transparent; */
     border-radius: var(--border-radius-small);
     padding: 14px 24px;
     color: var(--primary-color);
@@ -150,43 +150,45 @@ https://denmkit.github.io/
     transition: all 0.3s ease;
   }
 
-  .custom-btn:hover {
-    color: var(--primary-color);
-  }
-
   .custom-btn:focus {
     box-shadow: none;
   }
 
-  .custom-btn.bordered:hover,
-  .custom-btn.bordered:focus {
-    background: var(--primary-color);
-    /* border-color: transparent; */
-    color: var(--white-color);
-    /* letter-spacing: 2px; */
-    /* font-weight: var(--font-weight-bold); */
-  }
-  .custom-btn.bg-color:hover,
-  .custom-btn.bg-color:active{
-    /* border: 2px solid var(--primary-color); */
-    border-radius: var(--border-radius-small);
+  .bg-color:hover{
+    border: 1px solid var(--primary-color);
     color: var(--primary-color);
     background: transparent;
-    /* letter-spacing: 2px; */
-    /* font-weight: var(--font-weight-bold); */
   }
 
   .bordered {
     border: 1px solid var(--primary-color);
-    border-radius: var(--border-radius-small);
-    color: var(--primary-color);
   }
 
-  .bg-color.active, .bg-color{
-    border: 1px solid var(--primary-color);
+  .bg-color,
+  .bg-color:hover:active,
+  .bordered:hover {
     background: var(--primary-color);
     color: var(--white-color);
   }
+
+  .touchevents .bg-color:hover,
+  .touchevents .bordered:hover:active {
+    background: var(--primary-color);
+    color: var(--white-color);
+  }
+
+  .touchevents .bordered:hover,
+  .touchevents .bg-color:active {
+    border: 1px solid var(--primary-color);
+    color: var(--primary-color);
+    background: transparent;
+  }
+
+  .active, .active:hover {
+    background: var(--primary-color);
+    color: var(--white-color);
+  }
+
 
 
 
