@@ -6,30 +6,6 @@ https://denmkit.github.io/
 
 */
 
-  /* @font-face {
-      font-family: 'Plain';
-      src: url('../fonts/Plain-Regular.woff2') format('woff2'),
-          url('../fonts/Plain-Regular.woff') format('woff');
-      font-weight: normal;
-      font-style: normal;
-  }
-
-  @font-face {
-      font-family: 'Plain';
-      src: url('../fonts/Plain-Light.woff2') format('woff2'),
-          url('../fonts/Plain-Light.woff') format('woff');
-      font-weight: 300;
-      font-style: normal;
-  }
-
-  @font-face {
-      font-family: 'Plain';
-      src: url('../fonts/Plain-Bold.woff2') format('woff2'),
-          url('../fonts/Plain-Bold.woff') format('woff');
-      font-weight: bold;
-      font-style: normal;
-  } */
-
   :root {
     --primary-color:        #009ee2;
     --white-color:          #ffffff;
@@ -776,6 +752,14 @@ https://denmkit.github.io/
       font-weight: var(--font-weight-medium);
     }
 
+    h5 {
+      font-size: 18px;
+    }
+
+    h6 {
+      font-size: 18px;
+    }
+
     .tm-paging-item {
       font-size: var(--h6-font-size) !important;
       padding: 0;
@@ -836,6 +820,7 @@ https://denmkit.github.io/
    */
   .tm-paging-link.active {
     font-weight: bold;
+    background-color: transparent;
     /* border-bottom: 2px solid var(--primary-color); */
     color: var(--primary-color); 
   }
@@ -1021,7 +1006,6 @@ https://denmkit.github.io/
 
     /* margin-left: -1em; */
   }
-
   .copyright-text {
     color: var(--gray-color);
   }
