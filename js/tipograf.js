@@ -1,5 +1,5 @@
 $(document).ready(function () {
-    $('p, br, b, a, span, h1, h2, h3, h4, h5, small, strong').each(function() {
+    $('p, span, h1, h2, h3, h4, h5, small, strong').each(function() {
         st = $(this).html();
         // console.log(st)
         st = st.replaceAll('  ', ' ');
