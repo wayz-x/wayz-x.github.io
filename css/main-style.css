@@ -726,6 +726,11 @@ https://denmkit.github.io/
     #uneven-img{
       content:url("/images/cources/wide-uneven.png");
     }
+
+    #tech-img{
+      content:url("/images/cources/wide-tech.png");
+    }
+
     .text-phone {
       margin-right: 16px;
       margin-left: auto;
