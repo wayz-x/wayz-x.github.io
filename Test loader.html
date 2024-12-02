@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Feed</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .news-feed {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .news-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+        .news-item h2 {
+            font-size: 18px;
+            margin: 0;
+        }
+        .news-item p {
+            margin: 5px 0;
+        }
+        .news-item a {
+            text-decoration: none;
+            color: blue;
+        }
+    </style>
+</head>
+<body>
+    <div class="news-feed">
+        <h1>Latest News</h1>
+        <div id="news-container">
+            <!-- Новости будут добавлены сюда динамически -->
+        </div>
+    </div>
+
+    <script>
+        // URL-адреса страниц с новостями (или API)
+        const newsSources = [
+            '/blog/binding_type.html',  // Локальная страница
+            '/blog/binding_tune.html',  // Добавьте другие страницы
+            '/blog/binding_angles.html',
+
+
+        ];
+
+        // Контейнер для вставки новостей
+        const newsContainer = document.getElementById('news-container');
+
+        // Функция для загрузки HTML страницы и извлечения новостей
+        async function fetchNewsFromPage(url) {
+            try {
+                const response = await fetch(url);
+                const text = await response.text();
+
+                // Создание временного DOM для парсинга данных
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, 'text/html');
+
+                // Предполагаем, что новости находятся в элементах с классом "about section"
+                const newsItems = doc.querySelectorAll('.container');
+
+                // Преобразование NodeList в массив и извлечение данных
+                return Array.from(newsItems).map(item => ({
+                    title: item.querySelector('h2')?.textContent || 'Без заголовка',
+                    description: item.querySelector('p')?.textContent || 'Без описания',
+                    link: item.querySelector('a')?.href || '#'
+                }));
+            } catch (error) {
+                console.error(`Ошибка загрузки данных с ${url}:`, error);
+                return [];
+            }
+        }
+
+        // Функция для получения данных из API
+        async function fetchNewsFromAPI(url) {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                // Предполагаем, что API возвращает массив объектов с ключами title, description и link
+                return data.map(news => ({
+                    title: news.title || 'Без заголовка',
+                    description: news.description || 'Без описания',
+                    link: news.link || '#'
+                }));
+            } catch (error) {
+                console.error(`Ошибка загрузки данных из API ${url}:`, error);
+                return [];
+            }
+        }
+
+        // Функция для генерации HTML новости
+        function generateNewsHTML(news) {
+            const newsHTML = `
+                <div class="news-item">
+                    <h2><a href="${news.link}" target="_blank">${news.title}</a></h2>
+                    <p>${news.description}</p>
+                </div>
+            `;
+            return newsHTML;
+        }
+
+        // Основная функция для загрузки и отображения новостей
+        async function loadNewsFeed() {
+            const allNews = [];
+
+            // Перебираем все источники
+            for (const source of newsSources) {
+                if (source.startsWith('http')) {
+                    // Если это API
+                    const apiNews = await fetchNewsFromAPI(source);
+                    allNews.push(...apiNews);
+                } else {
+                    // Если это HTML-страница
+                    const pageNews = await fetchNewsFromPage(source);
+                    console.log(pageNews)
+                    allNews.push(...pageNews);
+                }
+            }
+
+            // Генерация HTML для всех новостей
+            allNews.forEach(news => {
+                const newsHTML = generateNewsHTML(news);
+                newsContainer.insertAdjacentHTML('beforeend', newsHTML);
+            });
+        }
+
+        // Запускаем процесс загрузки
+        loadNewsFeed();
+    </script>
+</body>
+</html>
+<!-- Как это работает
+Источники данных:
+В массиве newsSources указываются адреса страниц или API, откуда будут загружаться данные.
+Парсинг HTML-страниц:
+С помощью fetch загружаются HTML-страницы.
+DOMParser используется для извлечения новостей, которые находятся в элементах с классом .news-item.
+API-запросы:
+Если источник — API, предполагается, что он возвращает данные в формате JSON.
+Генерация ленты:
+Каждая новость преобразуется в HTML и добавляется в контейнер #news-container.
+Асинхронная обработка:
+Все запросы обрабатываются асинхронно для минимизации задержек.
+Как адаптировать под ваш сайт
+Замените адреса в массиве newsSources на актуальные страницы или API.
+Настройте селекторы (например, .news-item, h2, p, a) в зависимости от структуры ваших страниц.
+Добавьте стили, чтобы лента выглядела гармонично.
+Если что-то непонятно, задавайте вопросы! -->
