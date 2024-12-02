@@ -17,15 +17,14 @@ function handleKeyPress(e){
     document.getElementById("result").innerHTML = result; // Обнуляем значение вывода если было
 
     if (active === undefined && (height == 0 || isNaN(height))) { // если не выбран пол и не введен рост
-        alert = 'Выберите пол и рост сноубордиста!'
+        alert('Выберите пол и рост сноубордиста!')
     } else if (height == 0) { // если не введен рост
-        alert = 'Введите рост сноубордиста!'
+        alert('Введите рост сноубордиста!')
     } else if (active === undefined) { // если не выбран пол
-        alert = 'Выберите пол сноубордиста!'
+        alert('Выберите пол сноубордиста!')
     } else if (isNaN(height)) { // если ввели рост не цифрами
-        alert = 'Введите рост цифрами!'
+        alert('Введите рост цифрами!')
     } else { // если всё ОК считаем
-        alert =''
         switch (active) {
           case 'female':
             result = 0.27 * height;
@@ -34,7 +33,10 @@ function handleKeyPress(e){
             result = 0.29 * height;
             break;
         }
-        document.getElementById("result").innerHTML = result.toFixed(1)+' см.';
+        document.getElementById("result").innerHTML = '<h5>Ширина стойки: '+result.toFixed(1)+' см.</h5>';
     }
-    document.getElementById("alert").innerHTML = alert;
+  }
+
+  function alert(alert) {
+    document.getElementById("result").innerHTML = '<p class="alert">'+alert+'</p>';
   }
