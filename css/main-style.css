@@ -100,6 +100,13 @@ https://denmkit.github.io/
     line-height: 1.5em;
   }
 
+  li{
+    color: var(--p-color);
+    font-size: var(--p-font-size);
+    font-weight: var(--font-weight-light);
+    line-height: 1.5em;
+  }
+
   b, 
   strong {
     font-weight: var(--font-weight-bold);
@@ -110,6 +117,11 @@ https://denmkit.github.io/
     padding: 7rem 0;
   }
 
+  video {
+    position: relative;
+    height: auto;
+    width: 100%;
+  }
 
   /* BUTTON */
 
@@ -430,25 +442,120 @@ https://denmkit.github.io/
     background: var(--dark-color);
   }
 
-  .schedule-table {
+  .weekend {
+    color: red;
+}
+.today {
+    background-color: #ffeb3b;
+}
+
+.table-top {
+  background-color: var(--primary-color);
+  color: var(--white-color);
+}
+
+  .table {
     display: table;
     border: 0;
     text-align: center;
   }
 
-  .schedule-table strong,
-  .schedule-table span {
+  .table strong,
+  .table span {
     display: block;
     text-align: left;
   }
 
-  .schedule-table strong {
+  .table strong {
     color: var(--dark-color);
   }
 
-  .schedule-table span {
+  .text-muted {
+    color: var(--light-gray-color) !important;
+  }
+
+  .cource-newbie {
+    background-color: var(--primary-color);
+  }
+
+  .table td {
+    vertical-align: middle !important;
+    justify-content: center /* Вертикальное выравнивание содержимого ячеек */
+}
+
+  .highlight {
+    font-weight: var(--font-weight-bold);
+    border-radius: 50%; /* Превращение в круг */
+    width: 40px; /* Задание ширины круга */
+    height: 40px; /* Задание высоты круга */
+    display: flex; /* Для центровки текста */
+    justify-content: center; /* Горизонтальное выравнивание */
+    align-items: center; /* Вертикальное выравнивание */
+    margin: auto;
+}
+
+.highlight-newbie {
+  border: 4px solid #04a61a67; /* Линия вокруг даты */
+  
+}
+
+.highlight-turns {
+  /* border: 4px solid #deb900; Линия вокруг даты */
+  border: 4px solid #9a05fe76; /* Линия вокруг даты */
+}
+
+.highlight-carve {
+  border: 4px solid #0168c87f; /* Линия вокруг даты */
+}
+
+.highlight-tech {
+  border: 4px solid #ce090c92; /* Линия вокруг даты */
+}
+
+.highlight-speech {
+  border: 4px solid #5555557a; /* Линия вокруг даты */
+}
+  .table span {
     color: var(--dark-color);
   }
+
+/* Общий стиль для элементов с маркерами */
+.marker {
+  position: relative; /* Для позиционирования маркера */
+  padding-left: 25px; /* Отступ для текста после маркера */
+}
+
+/* Стиль маркера перед текстом */
+.marker::before {
+  content: ''; /* Создаёт пустой элемент */
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%); /* Центровка по вертикали */
+  width: 15px; /* Размер маркера */
+  height: 15px; /* Размер маркера */
+  background-color: var(--p-color); /* Цвет маркера */
+  border-radius: 50%; /* Делает маркер круглым */
+}
+
+/* Пример другого цвета */
+.marker.newbie::before {
+  background-color: #04a61a67;
+}
+
+.marker.turns::before {
+  background-color: #9a05fe76;
+}
+.marker.carve::before {
+  background-color: #0168c87f;
+}
+
+.marker.tech::before {
+  background-color: #ce090c92;
+}
+.marker.speech::before {
+  background-color: #5555557a;
+}
 
   .schedule-table small {
     font-size: var(--menu-font-size);
@@ -998,11 +1105,13 @@ https://denmkit.github.io/
     margin-right: 0;
   }
 
-  .table td:first-child,
+  /* .table td:first-child,
   .table td:last-child {
     width: 0.5%;
     white-space: nowrap;
-  }
+  } */
+
+
 
   .dots p::before {
     content: "\2022";
