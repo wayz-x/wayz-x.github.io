@@ -4,7 +4,11 @@
             '/blog/binding_tune.html',  // Добавьте другие страницы
             '/blog/binding_angles.html',
             '/blog/stance_calculator.html',
-            
+            '/blog/slope_rating.html',
+            '/blog/snowboard_inside.html',
+            '/blog/snowboard_cambers.html',
+            '/blog/snowboard_flex.html',
+            '/blog/snowboard_riding_styles.html',           
 
         ];
 
