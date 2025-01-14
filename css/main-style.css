@@ -123,6 +123,11 @@ https://denmkit.github.io/
     width: 100%;
   }
 
+  .auto-width {
+    width: 1% !important;
+    white-space: nowrap
+  }
+
   /* BUTTON */
 
   .custom-btn {
