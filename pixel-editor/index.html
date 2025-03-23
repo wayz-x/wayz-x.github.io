@@ -48,22 +48,22 @@
             width: 60px;
             padding: 5px;
         }
-        #canvas-container {
+        .canvas-container {
             position: relative;
+            width: 100%;
+            height: calc(100vh - 100px);
             overflow: hidden;
             background: white;
+            border-radius: 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        #grid-canvas {
+        canvas {
             position: absolute;
             top: 0;
             left: 0;
-            pointer-events: none;
-        }
-        #draw-canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
         .cursor-preview {
             position: fixed;
@@ -183,7 +183,7 @@
         <button id="copy" title="Копировать">📋</button>
         <button class="help-button" title="Справка">?</button>
     </div>
-    <div id="canvas-container">
+    <div class="canvas-container">
         <canvas id="background-canvas"></canvas>
         <canvas id="grid-canvas"></canvas>
         <canvas id="draw-canvas"></canvas>
