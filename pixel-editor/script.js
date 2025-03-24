@@ -9,30 +9,20 @@ class PixelEditor {
         this.backgroundCanvas = document.getElementById('background-canvas');
         this.cursorPreview = document.getElementById('cursor-preview');
         
-        // Перемещаем cursor-preview внутрь canvas-container
-        const container = document.querySelector('.canvas-container');
-        container.appendChild(this.cursorPreview);
-        this.cursorPreview.style.position = 'absolute';
+        // Перемещаем cursor-preview в body
+        document.body.appendChild(this.cursorPreview);
+        this.cursorPreview.style.position = 'fixed';
         this.cursorPreview.style.pointerEvents = 'none';
-        
-        // Создаем canvas для превью перетаскиваемой области
-        this.dragPreview = document.createElement('canvas');
-        this.dragPreview.style.position = 'absolute';
-        this.dragPreview.style.pointerEvents = 'none';
-        this.dragPreview.style.display = 'none';
-        container.appendChild(this.dragPreview);
-        this.dragPreviewCtx = this.dragPreview.getContext('2d', { willReadFrequently: true });
+        this.cursorPreview.style.zIndex = '1000';
         
         // Создаем временный canvas для перемещаемой области
         this.tempCanvas = document.createElement('canvas');
         this.tempCanvas.width = CANVAS_WIDTH;
         this.tempCanvas.height = CANVAS_HEIGHT;
-        this.tempCanvas.style.position = 'absolute';
-        this.tempCanvas.style.top = '0';
-        this.tempCanvas.style.left = '0';
+        this.tempCanvas.style.position = 'fixed';
         this.tempCanvas.style.pointerEvents = 'none';
-        this.tempCanvas.style.display = 'none';
-        document.querySelector('.canvas-container').appendChild(this.tempCanvas);
+        this.tempCanvas.style.zIndex = '999';
+        document.body.appendChild(this.tempCanvas);
         this.tempCtx = this.tempCanvas.getContext('2d', { willReadFrequently: true });
         
         // Создаем временный canvas для сохранения/копирования
@@ -134,17 +124,25 @@ class PixelEditor {
     }
     
     setupTools() {
-        ['move', 'rectangle', 'eraser'].forEach(tool => {
-            document.getElementById(tool).addEventListener('click', () => {
+        ['move', 'rectangle', 'oval', 'eraser'].forEach(tool => {
+            const toolButton = document.getElementById(tool);
+            if (!toolButton) {
+                console.warn(`Кнопка инструмента ${tool} не найдена`);
+                return;
+            }
+            
+            toolButton.addEventListener('click', () => {
                 this.currentTool = tool;
                 document.querySelectorAll('.toolbar button').forEach(btn => {
                     btn.classList.remove('active');
                 });
-                document.getElementById(tool).classList.add('active');
+                toolButton.classList.add('active');
                 
                 // Устанавливаем стиль курсора
-                this.canvas.style.cursor = tool === 'move' ? 'crosshair' : 
-                                         tool === 'eraser' ? 'none' : 'default';
+                if (this.canvas) {
+                    this.canvas.style.cursor = tool === 'move' ? 'crosshair' : 
+                                             tool === 'eraser' ? 'none' : 'default';
+                }
             });
         });
     }
@@ -187,7 +185,7 @@ class PixelEditor {
 
     updateCanvasTransform() {
         const transform = `translate(${this.offset.x}px, ${this.offset.y}px) scale(${this.scale})`;
-        [this.canvas, this.gridCanvas, this.backgroundCanvas, this.tempCanvas].forEach(canvas => {
+        [this.canvas, this.gridCanvas, this.backgroundCanvas].forEach(canvas => {
             canvas.style.transform = transform;
             canvas.style.transformOrigin = '0 0';
         });
@@ -233,11 +231,11 @@ class PixelEditor {
     }
     
     getMousePos(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        
-        // Получаем координаты мыши относительно контейнера
         const container = document.querySelector('.canvas-container');
+        if (!container) return null;
+        
         const containerRect = container.getBoundingClientRect();
+        if (!containerRect) return null;
         
         // Вычисляем координаты относительно canvas с учетом смещения и масштаба
         const x = (e.clientX - containerRect.left - this.offset.x) / this.scale;
@@ -257,27 +255,22 @@ class PixelEditor {
         const rect = this.canvas.getBoundingClientRect();
         const pos = this.getMousePos(e);
         
-        if (e.buttons === 4) { // Средняя кнопка мыши удержана
+        if (e.buttons === 4) {
             const container = document.querySelector('.canvas-container');
             const containerRect = container.getBoundingClientRect();
             
-            // Вычисляем размеры масштабированного изображения
-            const scaledWidth = CANVAS_WIDTH * this.scale;
-            const scaledHeight = CANVAS_HEIGHT * this.scale;
-            
-            // Вычисляем смещение курсора
             const dx = e.clientX - this.lastPos.x;
             const dy = e.clientY - this.lastPos.y;
             
-            // Вычисляем новые координаты
             let newOffsetX = this.offset.x + dx;
             let newOffsetY = this.offset.y + dy;
             
-            // Определяем максимальное смещение (90% от размера)
+            const scaledWidth = CANVAS_WIDTH * this.scale;
+            const scaledHeight = CANVAS_HEIGHT * this.scale;
+            
             const maxOverflowX = scaledWidth * 0.9;
             const maxOverflowY = scaledHeight * 0.9;
             
-            // Определяем ограничения в зависимости от размеров
             if (scaledWidth <= containerRect.width) {
                 newOffsetX = Math.max(-maxOverflowX, Math.min(maxOverflowX, newOffsetX));
             } else {
@@ -300,61 +293,19 @@ class PixelEditor {
             this.lastPos = { x: e.clientX, y: e.clientY };
             this.updateCanvas();
         } else if (this.isDragging && this.currentTool === 'move' && this.draggingArea) {
-            // Вычисляем смещение от начальной позиции
             const dx = pos.x - this.draggingArea.startX;
             const dy = pos.y - this.draggingArea.startY;
             
-            // Обновляем позиции пикселей
-            const newPixels = this.draggingArea.originalPixels.map(pixel => ({
-                x: pixel.x + dx,
-                y: pixel.y + dy
-            }));
+            // Проверяем границы до создания нового массива
+            const testPixel = {
+                x: this.draggingArea.originalPixels[0].x + dx,
+                y: this.draggingArea.originalPixels[0].y + dy
+            };
             
-            if (this.isAreaInBounds(newPixels)) {
-                this.tempCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-                this.draggingArea.pixels = newPixels;
-                this.drawAreaOnCanvas(this.tempCtx, this.draggingArea.pixels, this.draggingArea.color);
-                
-                // Вычисляем размеры области
-                const minX = Math.min(...this.draggingArea.pixels.map(p => p.x));
-                const maxX = Math.max(...this.draggingArea.pixels.map(p => p.x));
-                const minY = Math.min(...this.draggingArea.pixels.map(p => p.y));
-                const maxY = Math.max(...this.draggingArea.pixels.map(p => p.y));
-                const width = (maxX - minX + 1) * GRID_SIZE;
-                const height = (maxY - minY + 1) * GRID_SIZE;
-                
-                // Настраиваем превью
-                this.dragPreview.width = width;
-                this.dragPreview.height = height;
-                this.dragPreview.style.width = `${width}px`;
-                this.dragPreview.style.height = `${height}px`;
-                this.dragPreview.style.display = 'block';
-                
-                // Очищаем и рисуем область на превью
-                this.dragPreviewCtx.clearRect(0, 0, width, height);
-                this.dragPreviewCtx.fillStyle = this.draggingArea.color;
-                this.draggingArea.pixels.forEach(pixel => {
-                    this.dragPreviewCtx.fillRect(
-                        (pixel.x - minX) * GRID_SIZE,
-                        (pixel.y - minY) * GRID_SIZE,
-                        GRID_SIZE,
-                        GRID_SIZE
-                    );
-                });
-                
-                // Позиционируем превью
-                const container = document.querySelector('.canvas-container');
-                const containerRect = container.getBoundingClientRect();
-                
-                // Вычисляем позицию курсора относительно контейнера
-                const mouseX = e.clientX - containerRect.left;
-                const mouseY = e.clientY - containerRect.top;
-                
-                // Устанавливаем точку трансформации в левый верхний угол
-                this.dragPreview.style.transformOrigin = '0 0';
-                this.dragPreview.style.transform = `translate(${mouseX}px, ${mouseY}px) scale(${this.scale})`;
-                this.dragPreview.style.left = '0';
-                this.dragPreview.style.top = '0';
+            if (this.isAreaInBounds([testPixel])) {
+                // Обновляем только смещение
+                this.draggingArea.currentOffset = { dx, dy };
+                this.updateCursorPreview(e);
             }
         }
         
@@ -365,37 +316,26 @@ class PixelEditor {
         const pos = this.getMousePos(e);
         const gridPos = this.getGridPos(pos);
         
-        if (e.button === 1) { // Средняя кнопка мыши
+        if (e.button === 1) {
             e.preventDefault();
             this.isDragging = true;
             this.lastPos = { x: e.clientX, y: e.clientY };
             this.canvas.style.cursor = 'grabbing';
-        } else if (e.button === 0) { // Левая кнопка мыши
+        } else if (e.button === 0) {
             if (this.currentTool === 'move') {
-                const color = this.getColorAt(pos.x, pos.y);
-                if (color) {
+                const pixels = this.getColorAt(pos.x, pos.y);
+                if (pixels) {
                     this.isDragging = true;
-                    const pixels = this.getConnectedPixels(pos.x, pos.y, color);
-                    const minX = Math.min(...pixels.map(p => p.x));
-                    const maxX = Math.max(...pixels.map(p => p.x));
-                    const minY = Math.min(...pixels.map(p => p.y));
-                    const maxY = Math.max(...pixels.map(p => p.y));
-                    const centerX = Math.floor((minX + maxX) / 2);
-                    const centerY = Math.floor((minY + maxY) / 2);
-                    
-                    // Сохраняем минимальные координаты как точку отсчета
+                    const connectedPixels = this.getConnectedPixels(pos.x, pos.y);
                     this.draggingArea = {
-                        color: color,
-                        startX: minX,
-                        startY: minY,
-                        pixels: pixels,
-                        originalPixels: pixels,
-                        centerX: centerX,
-                        centerY: centerY
+                        startX: pos.x,
+                        startY: pos.y,
+                        pixels: connectedPixels,
+                        originalPixels: JSON.parse(JSON.stringify(connectedPixels)) // Глубокое копирование с сохранением цветов
                     };
                     
-                    // Очищаем старую область сразу при начале перемещения
-                    this.clearArea(this.draggingArea.pixels);
+                    // Очищаем старую область
+                    this.clearArea(connectedPixels);
                 }
             } else {
                 this.drawAtPosition(pos);
@@ -404,25 +344,26 @@ class PixelEditor {
     }
     
     handleMouseUp(e) {
-        const pos = this.getMousePos(e);
-        const gridPos = this.getGridPos(pos);
-        
-        if (e.button === 1) {
+        if (this.isDragging && this.currentTool === 'move' && this.draggingArea) {
+            const { dx = 0, dy = 0 } = this.draggingArea.currentOffset || {};
+            
+            // Создаем новые пиксели с сохранением цветов
+            const newPixels = this.draggingArea.originalPixels.map(pixel => ({
+                x: pixel.x + dx,
+                y: pixel.y + dy,
+                pixels: pixel.pixels // Сохраняем оригинальные цвета
+            }));
+            
+            // Рисуем область на основном холсте с сохранением цветов
+            this.drawArea(newPixels);
+            
+            // Сбрасываем состояние
             this.isDragging = false;
-            this.canvas.style.cursor = this.currentTool === 'move' ? 'crosshair' : 
-                                     this.currentTool === 'eraser' ? 'none' : 'default';
-        } else if (e.button === 0 && this.currentTool === 'move') {
-            if (this.draggingArea) {
-                // Рисуем область в новом месте на основном canvas
-                this.drawArea(this.draggingArea.pixels, this.draggingArea.color);
-                
-                // Скрываем превью
-                this.dragPreview.style.display = 'none';
-                
-                this.isDragging = false;
-                this.draggingArea = null;
-                this.saveState();
-            }
+            this.draggingArea = null;
+            this.cursorPreview.style.display = 'none';
+            
+            // Сохраняем состояние
+            this.saveState();
         }
     }
     
@@ -492,42 +433,105 @@ class PixelEditor {
     
     updateCursorPreview(e) {
         const pos = this.getMousePos(e);
-        const width = parseInt(document.getElementById('width').value);
-        const height = parseInt(document.getElementById('height').value);
+        if (!pos) return;
         
-        if (this.currentTool === 'move') {
+        const width = parseInt(document.getElementById('width')?.value || '1');
+        const height = parseInt(document.getElementById('height')?.value || '1');
+        
+        if (this.currentTool === 'move' && !this.isDragging) {
             this.cursorPreview.style.display = 'none';
             return;
         }
         
         this.cursorPreview.style.display = 'block';
         
-        if (this.currentTool === 'eraser') {
+        if (this.isDragging && this.currentTool === 'move' && this.draggingArea) {
+            const bounds = this.getAreaBounds(this.draggingArea.originalPixels);
+            const width = (bounds.maxX - bounds.minX + 1) * GRID_SIZE;
+            const height = (bounds.maxY - bounds.minY + 1) * GRID_SIZE;
+            
+            // Создаем временный canvas для отрисовки пикселей
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = width;
+            tempCanvas.height = height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Рисуем пиксели с их оригинальными цветами
+            this.draggingArea.originalPixels.forEach(pixel => {
+                if (pixel.pixels) {
+                    pixel.pixels.forEach(p => {
+                        tempCtx.fillStyle = `rgba(${p.r}, ${p.g}, ${p.b}, ${p.a})`;
+                        tempCtx.fillRect(
+                            (pixel.x - bounds.minX) * GRID_SIZE + p.x,
+                            (pixel.y - bounds.minY) * GRID_SIZE + p.y,
+                            1,
+                            1
+                        );
+                    });
+                }
+            });
+            
+            this.cursorPreview.style.width = `${width * this.scale}px`;
+            this.cursorPreview.style.height = `${height * this.scale}px`;
+            this.cursorPreview.style.backgroundImage = `url(${tempCanvas.toDataURL()})`;
+            this.cursorPreview.style.backgroundSize = '100% 100%';
+            this.cursorPreview.style.backgroundColor = 'transparent';
+            this.cursorPreview.style.border = 'none';
+            
+            const container = document.querySelector('.canvas-container');
+            const containerRect = container.getBoundingClientRect();
+            
+            const { dx = 0, dy = 0 } = this.draggingArea.currentOffset || {};
+            const left = containerRect.left + this.offset.x + (bounds.minX + dx) * GRID_SIZE * this.scale;
+            const top = containerRect.top + this.offset.y + (bounds.minY + dy) * GRID_SIZE * this.scale;
+            
+            this.cursorPreview.style.transform = 'none';
+            this.cursorPreview.style.left = `${left}px`;
+            this.cursorPreview.style.top = `${top}px`;
+        } else if (this.currentTool === 'eraser') {
             const size = GRID_SIZE * 10;
-            this.cursorPreview.style.width = `${size}px`;
-            this.cursorPreview.style.height = `${size}px`;
+            this.cursorPreview.style.width = `${size * this.scale}px`;
+            this.cursorPreview.style.height = `${size * this.scale}px`;
             this.cursorPreview.style.borderRadius = '50%';
             this.cursorPreview.style.border = '2px solid #ff0000';
             this.cursorPreview.style.backgroundColor = 'rgba(255, 255, 255, 0.8)';
             this.cursorPreview.style.boxShadow = '0 0 10px rgba(255, 0, 0, 0.5)';
+            
+            const previewWidth = parseFloat(this.cursorPreview.style.width);
+            const previewHeight = parseFloat(this.cursorPreview.style.height);
+            
+            this.cursorPreview.style.transform = 'none';
+            this.cursorPreview.style.left = `${e.clientX - previewWidth/2}px`;
+            this.cursorPreview.style.top = `${e.clientY - previewHeight/2}px`;
         } else {
-            this.cursorPreview.style.width = `${width * GRID_SIZE}px`;
-            this.cursorPreview.style.height = `${height * GRID_SIZE}px`;
-            this.cursorPreview.style.borderRadius = '0';
+            this.cursorPreview.style.width = `${width * GRID_SIZE * this.scale}px`;
+            this.cursorPreview.style.height = `${height * GRID_SIZE * this.scale}px`;
+            this.cursorPreview.style.borderRadius = this.currentTool === 'oval' ? '50%' : '0';
             this.cursorPreview.style.backgroundColor = this.currentColor;
             this.cursorPreview.style.border = 'none';
+            this.cursorPreview.style.boxShadow = 'none';
+            
+            const previewWidth = parseFloat(this.cursorPreview.style.width);
+            const previewHeight = parseFloat(this.cursorPreview.style.height);
+            
+            this.cursorPreview.style.transform = 'none';
+            this.cursorPreview.style.left = `${e.clientX - previewWidth/2}px`;
+            this.cursorPreview.style.top = `${e.clientY - previewHeight/2}px`;
         }
-
-        const container = document.querySelector('.canvas-container');
-        const containerRect = container.getBoundingClientRect();
-        
-        const left = e.clientX - containerRect.left;
-        const top = e.clientY - containerRect.top;
-        
-        this.cursorPreview.style.transformOrigin = '0 0';
-        this.cursorPreview.style.transform = `translate(${left}px, ${top}px) scale(${this.scale})`;
-        this.cursorPreview.style.left = '0';
-        this.cursorPreview.style.top = '0';
+    }
+    
+    getAreaBounds(pixels) {
+        return pixels.reduce((bounds, pixel) => ({
+            minX: Math.min(bounds.minX, pixel.x),
+            minY: Math.min(bounds.minY, pixel.y),
+            maxX: Math.max(bounds.maxX, pixel.x),
+            maxY: Math.max(bounds.maxY, pixel.y)
+        }), {
+            minX: Infinity,
+            minY: Infinity,
+            maxX: -Infinity,
+            maxY: -Infinity
+        });
     }
     
     drawAtPosition(pos) {
@@ -538,6 +542,8 @@ class PixelEditor {
             this.eraseArea(pos.x, pos.y);
         } else if (this.currentTool === 'rectangle') {
             this.drawRectangle(pos.x, pos.y, width, height);
+        } else if (this.currentTool === 'oval') {
+            this.drawOval(pos.x, pos.y, width, height);
         }
     }
     
@@ -550,6 +556,23 @@ class PixelEditor {
             width * GRID_SIZE,
             height * GRID_SIZE
         );
+        this.saveState();
+        this.drawGrid();
+    }
+    
+    drawOval(x, y, width, height) {
+        this.ctx.fillStyle = this.currentColor;
+        
+        // Переводим координаты сетки в реальные пиксели
+        const centerX = (x + width / 2) * GRID_SIZE;
+        const centerY = (y + height / 2) * GRID_SIZE;
+        const radiusX = (width * GRID_SIZE) / 2;
+        const radiusY = (height * GRID_SIZE) / 2;
+        
+        this.ctx.beginPath();
+        this.ctx.ellipse(centerX, centerY, radiusX, radiusY, 0, 0, 2 * Math.PI);
+        this.ctx.fill();
+        
         this.saveState();
         this.drawGrid();
     }
@@ -572,9 +595,23 @@ class PixelEditor {
         );
         
         const data = imageData.data;
-        if (data[3] === 0) return null;
+        const pixels = [];
         
-        return `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+        // Собираем все непрозрачные пиксели
+        for (let i = 0; i < data.length; i += 4) {
+            if (data[i + 3] > 0) {
+                pixels.push({
+                    r: data[i],
+                    g: data[i + 1],
+                    b: data[i + 2],
+                    a: data[i + 3] / 255,
+                    x: (i/4) % GRID_SIZE,
+                    y: Math.floor((i/4) / GRID_SIZE)
+                });
+            }
+        }
+        
+        return pixels.length > 0 ? pixels : null;
     }
     
     saveState() {
@@ -606,26 +643,25 @@ class PixelEditor {
     }
     
     updateCanvas() {
-        this.canvas.style.transform = `translate(${this.offset.x}px, ${this.offset.y}px) scale(${this.scale})`;
-        this.gridCanvas.style.transform = `translate(${this.offset.x}px, ${this.offset.y}px) scale(${this.scale})`;
-        this.backgroundCanvas.style.transform = `translate(${this.offset.x}px, ${this.offset.y}px) scale(${this.scale})`;
+        const transform = `translate(${this.offset.x}px, ${this.offset.y}px) scale(${this.scale})`;
+        this.canvas.style.transform = transform;
+        this.gridCanvas.style.transform = transform;
+        this.backgroundCanvas.style.transform = transform;
+        this.tempCanvas.style.transform = transform;
     }
-    
+
     clearCanvas() {
         this.ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         this.saveState();
     }
     
     getCombinedImage() {
-        // Очищаем экспортный canvas
         this.exportCtx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         
-        // Рисуем фоновое изображение
         if (this.backgroundImage) {
             this.exportCtx.drawImage(this.backgroundImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
         }
         
-        // Рисуем закрашенные пиксели
         this.exportCtx.drawImage(this.canvas, 0, 0);
         
         return this.exportCanvas.toDataURL('image/png');
@@ -694,28 +730,32 @@ class PixelEditor {
     getConnectedPixels(x, y, color) {
         const pixels = new Set();
         const stack = [[x, y]];
+        const basePixels = this.getColorAt(x, y);
+        if (!basePixels) return [];
         
         while (stack.length) {
             const [currentX, currentY] = stack.pop();
             const key = `${currentX},${currentY}`;
             
             if (!pixels.has(key)) {
-                pixels.add(key);
-                
-                // Проверяем соседние пиксели
-                const neighbors = [
-                    [currentX - 1, currentY],
-                    [currentX + 1, currentY],
-                    [currentX, currentY - 1],
-                    [currentX, currentY + 1]
-                ];
-                
-                for (const [nx, ny] of neighbors) {
-                    if (nx >= 0 && nx < CANVAS_WIDTH / GRID_SIZE && 
-                        ny >= 0 && ny < CANVAS_HEIGHT / GRID_SIZE) {
-                        const neighborColor = this.getColorAt(nx, ny);
-                        if (neighborColor === color) {
-                            stack.push([nx, ny]);
+                const currentPixels = this.getColorAt(currentX, currentY);
+                if (currentPixels) {
+                    pixels.add(key);
+                    
+                    const neighbors = [
+                        [currentX - 1, currentY],
+                        [currentX + 1, currentY],
+                        [currentX, currentY - 1],
+                        [currentX, currentY + 1]
+                    ];
+                    
+                    for (const [nx, ny] of neighbors) {
+                        if (nx >= 0 && nx < CANVAS_WIDTH / GRID_SIZE && 
+                            ny >= 0 && ny < CANVAS_HEIGHT / GRID_SIZE) {
+                            const neighborPixels = this.getColorAt(nx, ny);
+                            if (neighborPixels) {
+                                stack.push([nx, ny]);
+                            }
                         }
                     }
                 }
@@ -724,25 +764,53 @@ class PixelEditor {
         
         return Array.from(pixels).map(key => {
             const [x, y] = key.split(',').map(Number);
-            return { x, y };
+            return { 
+                x, 
+                y,
+                pixels: this.getColorAt(x, y)
+            };
         });
     }
-    
+
+    drawArea(pixels, ctx = this.ctx) {
+        const tempCanvas = document.createElement('canvas');
+        tempCanvas.width = GRID_SIZE;
+        tempCanvas.height = GRID_SIZE;
+        const tempCtx = tempCanvas.getContext('2d');
+        
+        pixels.forEach(pixel => {
+            if (pixel.pixels) {
+                // Очищаем временный контекст
+                tempCtx.clearRect(0, 0, GRID_SIZE, GRID_SIZE);
+                
+                // Рисуем каждый суб-пиксель с его оригинальным цветом
+                pixel.pixels.forEach(p => {
+                    tempCtx.fillStyle = `rgba(${p.r}, ${p.g}, ${p.b}, ${p.a})`;
+                    tempCtx.fillRect(p.x, p.y, 1, 1);
+                });
+                
+                // Копируем на основной холст
+                ctx.drawImage(
+                    tempCanvas,
+                    pixel.x * GRID_SIZE,
+                    pixel.y * GRID_SIZE
+                );
+            } else {
+                // Для обратной совместимости
+                ctx.fillStyle = color;
+                ctx.fillRect(
+                    pixel.x * GRID_SIZE,
+                    pixel.y * GRID_SIZE,
+                    GRID_SIZE,
+                    GRID_SIZE
+                );
+            }
+        });
+    }
+
     clearArea(pixels) {
         pixels.forEach(pixel => {
             this.ctx.clearRect(
-                pixel.x * GRID_SIZE,
-                pixel.y * GRID_SIZE,
-                GRID_SIZE,
-                GRID_SIZE
-            );
-        });
-    }
-    
-    drawArea(pixels, color) {
-        this.ctx.fillStyle = color;
-        pixels.forEach(pixel => {
-            this.ctx.fillRect(
                 pixel.x * GRID_SIZE,
                 pixel.y * GRID_SIZE,
                 GRID_SIZE,
@@ -759,21 +827,15 @@ class PixelEditor {
             pixel.y < CANVAS_HEIGHT / GRID_SIZE
         );
     }
-    
-    drawAreaOnCanvas(ctx, pixels, color) {
-        ctx.fillStyle = color;
-        pixels.forEach(pixel => {
-            ctx.fillRect(
-                pixel.x * GRID_SIZE,
-                pixel.y * GRID_SIZE,
-                GRID_SIZE,
-                GRID_SIZE
-            );
-        });
-    }
 }
 
 // Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', () => {
-    new PixelEditor();
-}); 
+    setTimeout(() => {
+        try {
+            new PixelEditor();
+        } catch (error) {
+            console.error('Ошибка при инициализации редактора:', error);
+        }
+    }, 100);
+});
