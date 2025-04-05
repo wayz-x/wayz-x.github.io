@@ -18,7 +18,7 @@
             z-index: 1000;
             margin-bottom: 20px;
             padding: 10px;
-            background: white;
+            background: #3b3b3b;
             border-radius: 0 0 5px 5px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             display: flex;
@@ -26,23 +26,43 @@
             gap: 10px;
         }
         .toolbar button {
-            padding: 8px 15px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
-            background: #4CAF50;
+            background: #666;
             color: white;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
         }
-        .toolbar button:hover {
-            background: #45a049;
+        .toolbar button img {
+            /* width: 20px; */
+            height: 20px;
+            filter: brightness(0) invert(1);
+            transition: transform 0.2s;
+        }
+        .toolbar button:hover img {
+            transform: scale(1.2);
+    
         }
         .toolbar button.active {
             background: #2196F3;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #1976D2;
+            transform: scale(1.05);
+            position: relative;
+            z-index: 5;
+        }
+        .toolbar button.active img {
+            transform: scale(1.1);
+            filter: brightness(0) invert(1);
         }
         .size-inputs {
             display: flex;
             gap: 10px;
             align-items: center;
+            color: white;
         }
         .size-inputs input {
             width: 60px;
@@ -71,10 +91,19 @@
             z-index: 1000;
             border: 1px solid #000;
         }
+        #cursor-icon {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 16px;
+            height: 16px;
+            filter: invert(1) brightness(1);
+        }
         .color-buttons {
             display: flex;
-            gap: 5px;
+            gap: 12px;
             align-items: center;
+            margin: 0 10px;
         }
         .color-button {
             width: 30px;
@@ -86,26 +115,23 @@
         }
         .color-button.active {
             border-color: #000;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #000;
+            transform: scale(1.1);
+            z-index: 10;
+            position: relative;
         }
         .color-button[data-color="#FFFFFF"] {
             border: 1px solid #ccc;
         }
-        .help-button {
-            margin-left: auto;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background: #2196F3;
-            color: white;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .color-button[data-color="#FFFFFF"].active {
+            border-color: #00000065;
+            box-shadow: 0 0 0 2px white, 0 0 0 4px #1976D2;
+            transform: scale(1.1);
+            z-index: 10;
+            position: relative;
         }
-        .help-button:hover {
+
+        .toolbar button:hover {
             background: #1976D2;
         }
         .modal {
@@ -155,21 +181,72 @@
             margin: 0 0 5px 0;
             line-height: 1.4;
         }
+        .text-input-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1003;
+        }
+        .text-input-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+        }
+        .text-input-content input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .text-input-content button {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            background: #2196F3;
+            color: white;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .text-input-content button:hover {
+            background: #074272;
+        }
+        .text-input-content button.cancel {
+            background: #f44336;
+        }
+        .text-input-content button.cancel:hover {
+            background: #d32f2f;
+        }
+        .svg-text {
+            font-family: Arial, sans-serif;
+            font-size: 64px;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
     <div class="toolbar">
-        <button id="move" title="Перемещение">✥</button>
-        <button id="rectangle" title="Прямоугольник">▢</button>
-        <button id="oval" title="Овал">◯</button>
-        <button id="eraser" title="Ластик">⌫</button>
+        <button id="move" title="Перемещение"><img src="icons/move_tool.svg" alt="Перемещение"></button>
+        <button id="rectangle" title="Прямоугольник"><img src="icons/rectangle_tool.svg" alt="Прямоугольник"></button>
+        <button id="oval" title="Овал"><img src="icons/cirle_tool.svg" alt="Овал"></button>
+        <button id="text" title="Текст"><img src="icons/text_tool.svg" alt="Текст"></button>
+        <button id="eraser" title="Ластик"><img src="icons/eraser_tool.svg" alt="Ластик"></button>
         <div class="size-inputs">
             <label>Ширина:</label>
-            <input type="number" id="width" min="1" value="1">
+            <input type="number" id="width" min="1" value="10">
             <label>Высота:</label>
-            <input type="number" id="height" min="1" value="1">
+            <input type="number" id="height" min="1" value="10">
         </div>
-        <button id="undo" title="Отмена">↩</button>
+        <button id="undo" title="Отмена"><img src="icons/back_tool.svg" alt="Отмена"></button>
         <div class="color-buttons">
             <button class="color-button active" data-color="#da2128" style="background-color: #da2128"></button>
             <button class="color-button" data-color="#3069b4" style="background-color: #3069b4"></button>
@@ -179,10 +256,14 @@
             <button class="color-button" data-color="#000000" style="background-color: #000000"></button>
             <button class="color-button" data-color="#FFFFFF" style="background-color: #FFFFFF"></button>
         </div>
-        <button id="save" title="Сохранить">💾</button>
-        <button id="clear" title="Очистить">🗑️</button>
-        <button id="copy" title="Копировать">📋</button>
-        <button class="help-button" title="Справка">?</button>
+        <button id="save" title="Сохранить"><img src="icons/save_file_tool.svg" alt="Сохранить" width="20" height="20"></button>
+        <button id="clear" title="Очистить"><img src="icons/clear_tool.svg" alt="Очистить" width="20" height="20"></button>
+        <button id="copy" title="Копировать"><img src="icons/copy_tool.svg" alt="Копировать" width="20" height="20"></button>
+        <div style="margin-left: auto; display: flex; gap: 8px;">
+            <button id="export-project" class="json-button" title="Экспорт проекта"><img src="icons/export_tool.svg" alt="Экспорт" width="20" height="20"></button>
+            <button id="import-project" class="json-button" title="Импорт проекта"><img src="icons/import_tool.svg" alt="Импорт" width="20" height="20"></button>
+            <button class="help-button" title="Справка"><img src="icons/help_tool.svg" alt="Справка" width="20" height="20"></button>
+        </div>
     </div>
     <div class="canvas-container">
         <canvas id="background-canvas"></canvas>
@@ -198,10 +279,11 @@
             
             <div class="help-section">
                 <h3>🎨 Инструменты рисования</h3>
-                <p>⬜ Прямоугольник - рисует прямоугольник выбранного размера</p>
-                <p>◯ Овал - рисует овал выбранного размера</p>
-                <p>✥ Перемещение - позволяет перемещать нарисованные области</p>
-                <p>⌫ Ластик - удаляет области одного цвета</p>
+                <p><img src="icons/rectangle_tool.svg" width="16" height="16" style="vertical-align: middle;"> Прямоугольник - рисует прямоугольник выбранного размера</p>
+                <p><img src="icons/cirle_tool.svg" width="16" height="16" style="vertical-align: middle;"> Овал - рисует овал выбранного размера</p>
+                <p><img src="icons/text_tool.svg" width="16" height="16" style="vertical-align: middle;"> Текст - добавляет текст выбранного размера (кликните на текст для редактирования)</p>
+                <p><img src="icons/move_tool.svg" width="16" height="16" style="vertical-align: middle;"> Перемещение - позволяет перемещать нарисованные области</p>
+                <p><img src="icons/eraser_tool.svg" width="16" height="16" style="vertical-align: middle;"> Ластик - удаляет области одного цвета</p>
             </div>
             
             <div class="help-section">
@@ -212,10 +294,12 @@
             
             <div class="help-section">
                 <h3>🎯 Дополнительные функции</h3>
-                <p>↩ Отмена - отменяет последнее действие</p>
-                <p>💾 Сохранить - сохраняет изображение в файл</p>
-                <p>🗑️ Очистить - очищает весь холст</p>
-                <p>📋 Копировать - копирует изображение в буфер обмена</p>
+                <p><img src="icons/back_tool.svg" width="16" height="16" style="vertical-align: middle;"> Отмена - отменяет последнее действие</p>
+                <p><img src="icons/save_file_tool.svg" width="16" height="16" style="vertical-align: middle;"> Сохранить - сохраняет изображение в файл</p>
+                <p><img src="icons/clear_tool.svg" width="16" height="16" style="vertical-align: middle;"> Очистить - очищает весь холст</p>
+                <p><img src="icons/copy_tool.svg" width="16" height="16" style="vertical-align: middle;"> Копировать - копирует изображение в буфер обмена</p>
+                <p><img src="icons/export_tool.svg" width="16" height="16" style="vertical-align: middle;"> Экспорт проекта - сохраняет проект в JSON-файл</p>
+                <p><img src="icons/import_tool.svg" width="16" height="16" style="vertical-align: middle;"> Импорт проекта - загружает проект из JSON-файла</p>
             </div>
             
             <div class="help-section">
@@ -225,6 +309,19 @@
             </div>
         </div>
     </div>
+    
+    <div class="text-input-dialog" id="textInputDialog">
+        <div class="text-input-content">
+            <h3>Введите текст</h3>
+            <input type="text" id="textInput" placeholder="Введите текст...">
+            <div>
+                <button id="confirmText">ОК</button>
+                <button id="cancelText" class="cancel">Отмена</button>
+            </div>
+        </div>
+    </div>
+    
+    <input type="file" id="import-file" accept=".json" style="display: none;">
     
     <script src="scriptSVG.js"></script>
 </body>
