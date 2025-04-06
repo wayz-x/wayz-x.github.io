@@ -14,6 +14,10 @@ class PixelEditorSVG {
         this.backgroundImage = null;
         this.previewShape = null;
         this.editingTextElement = null;
+        this.randomSelectionStart = null;
+        this.randomSelectionRect = null;
+        this.randomDensityDialog = null;
+        this.randomGroup = null;
         
         // История действий
         this.history = [];
@@ -201,7 +205,7 @@ class PixelEditorSVG {
     }
     
     setupTools() {
-        ['move', 'rectangle', 'oval', 'text', 'eraser'].forEach(tool => {
+        ['move', 'rectangle', 'oval', 'text', 'eraser', 'random'].forEach(tool => {
             const button = document.getElementById(tool);
             if (button) {
                 button.addEventListener('click', () => {
@@ -269,6 +273,9 @@ class PixelEditorSVG {
                 break;
             case 'text':
                 this.svg.style.cursor = 'text'; // IDC_NO
+                break;
+            case 'random':
+                this.svg.style.cursor = 'crosshair';
                 break;
             default:
                 this.svg.style.cursor = 'default';
@@ -382,6 +389,28 @@ class PixelEditorSVG {
                 // Создаем новый текст
                 this.showTextDialog(pos);
             }
+        } else if (this.currentTool === 'random') {
+            // Начинаем выделение области для рандомного заполнения
+            if (this.randomSelectionRect) {
+                this.randomSelectionRect.remove();
+                this.randomSelectionRect = null;
+            }
+            this.randomSelectionStart = pos;
+            
+            // Создаем прямоугольник выделения
+            this.randomSelectionRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+            this.randomSelectionRect.setAttribute('x', pos.x);
+            this.randomSelectionRect.setAttribute('y', pos.y);
+            this.randomSelectionRect.setAttribute('width', 0);
+            this.randomSelectionRect.setAttribute('height', 0);
+            this.randomSelectionRect.setAttribute('fill', 'none');
+            this.randomSelectionRect.setAttribute('stroke', this.currentColor);
+            this.randomSelectionRect.setAttribute('stroke-width', '1');
+            this.randomSelectionRect.setAttribute('stroke-dasharray', '5,5');
+            this.randomSelectionRect.setAttribute('class', 'selection-rect');
+            
+            this.svg.appendChild(this.randomSelectionRect);
+            this.isDragging = true;
         } else if ((this.currentTool === 'rectangle' || this.currentTool === 'oval') && !element) {
             // Создаем новую фигуру только если не кликнули на существующую
             if (this.previewShape) {
@@ -422,6 +451,17 @@ class PixelEditorSVG {
                     this.selectedElement.setAttribute('x', this.startPos.x + dx);
                     this.selectedElement.setAttribute('y', this.startPos.y + dy);
                 }
+            } else if (this.currentTool === 'random' && this.randomSelectionStart && this.randomSelectionRect) {
+                // Обновляем размер прямоугольника выделения
+                const x = Math.min(this.randomSelectionStart.x, pos.x);
+                const y = Math.min(this.randomSelectionStart.y, pos.y);
+                const width = Math.abs(pos.x - this.randomSelectionStart.x);
+                const height = Math.abs(pos.y - this.randomSelectionStart.y);
+                
+                this.randomSelectionRect.setAttribute('x', x);
+                this.randomSelectionRect.setAttribute('y', y);
+                this.randomSelectionRect.setAttribute('width', width);
+                this.randomSelectionRect.setAttribute('height', height);
             }
         } else {
             // Обновляем предпросмотр фигуры
@@ -464,6 +504,22 @@ class PixelEditorSVG {
                 });
             }
             this.saveState();
+        } else if (this.isDragging && this.currentTool === 'random' && this.randomSelectionRect) {
+            // Завершаем выделение области для случайного заполнения
+            const x = parseInt(this.randomSelectionRect.getAttribute('x'));
+            const y = parseInt(this.randomSelectionRect.getAttribute('y'));
+            const width = parseInt(this.randomSelectionRect.getAttribute('width'));
+            const height = parseInt(this.randomSelectionRect.getAttribute('height'));
+            
+            // Убеждаемся, что размеры области достаточны
+            if (width > this.GRID_SIZE && height > this.GRID_SIZE) {
+                // Показываем диалог для ввода плотности заполнения
+                this.showRandomDensityDialog(x, y, width, height);
+            } else {
+                // Удаляем выделение, если оно слишком маленькое
+                this.randomSelectionRect.remove();
+                this.randomSelectionRect = null;
+            }
         }
         
         this.isDragging = false;
@@ -1069,6 +1125,9 @@ class PixelEditorSVG {
                 this.confirmTextBtn.click();
             }
         });
+        
+        // Инициализируем диалог для случайного заполнения
+        this.setupRandomDensityDialog();
     }
     
     // Методы для диалога ввода текста
@@ -1347,6 +1406,213 @@ class PixelEditorSVG {
             console.error('Ошибка при импорте проекта:', error);
             this.showNotification('Ошибка при импорте проекта!', true);
         }
+    }
+
+    // Методы для диалога плотности случайного заполнения
+    setupRandomDensityDialog() {
+        // Проверяем, существует ли диалог
+        this.randomDensityDialog = document.getElementById('randomDensityDialog');
+        if (!this.randomDensityDialog) {
+            // Создаем HTML для диалога
+            const dialogHTML = `
+                <div class="text-input-dialog" id="randomDensityDialog" style="display: none;">
+                    <div class="text-input-content">
+                        <h3>Количество людей</h3>
+                        <input type="number" id="densityInput" min="1" value="1000" placeholder="Введите количество людей...">
+                        <div>
+                            <button id="confirmDensity">ОК</button>
+                            <button id="cancelDensity" class="cancel">Отмена</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Добавляем диалог в DOM
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = dialogHTML;
+            document.body.appendChild(tempDiv.firstElementChild);
+            
+            // Получаем ссылки на элементы диалога
+            this.randomDensityDialog = document.getElementById('randomDensityDialog');
+            this.densityInput = document.getElementById('densityInput');
+            this.confirmDensityBtn = document.getElementById('confirmDensity');
+            this.cancelDensityBtn = document.getElementById('cancelDensity');
+            
+            // Добавляем обработчики
+            this.confirmDensityBtn.addEventListener('click', () => {
+                this.applyRandomFill();
+                this.hideRandomDensityDialog();
+            });
+            
+            this.cancelDensityBtn.addEventListener('click', () => {
+                this.hideRandomDensityDialog();
+                if (this.randomSelectionRect) {
+                    this.randomSelectionRect.remove();
+                    this.randomSelectionRect = null;
+                }
+            });
+            
+            // Закрытие по Escape
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.isRandomDensityDialogVisible()) {
+                    this.hideRandomDensityDialog();
+                    if (this.randomSelectionRect) {
+                        this.randomSelectionRect.remove();
+                        this.randomSelectionRect = null;
+                    }
+                }
+            });
+            
+            // Отправка формы по Enter
+            this.densityInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && this.isRandomDensityDialogVisible()) {
+                    this.confirmDensityBtn.click();
+                }
+            });
+        }
+    }
+    
+    showRandomDensityDialog(x, y, width, height) {
+        this.randomArea = { x, y, width, height };
+        this.randomDensityDialog.style.display = 'block';
+        this.densityInput.focus();
+    }
+    
+    hideRandomDensityDialog() {
+        this.randomDensityDialog.style.display = 'none';
+        if (this.randomSelectionRect) {
+            this.randomSelectionRect.remove();
+            this.randomSelectionRect = null;
+        }
+    }
+    
+    isRandomDensityDialogVisible() {
+        return this.randomDensityDialog.style.display === 'block';
+    }
+    
+    applyRandomFill() {
+        // Получаем количество пикселей для заполнения
+        const pixelsToFillInput = parseInt(this.densityInput.value) || 0;
+        
+        // Проверяем значение
+        if (pixelsToFillInput < 1) {
+            this.showNotification('Количество пикселей должно быть больше 0', true);
+            return;
+        }
+        
+        const { x, y, width, height } = this.randomArea;
+        
+        // Удаляем старую группу, если она есть в этой области
+        this.removeRandomGroupInArea(x, y, width, height);
+        
+        // Создаем новую группу для случайных пикселей
+        const randomGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        randomGroup.classList.add('random-group');
+        randomGroup.classList.add('shape');
+        randomGroup.dataset.x = x;
+        randomGroup.dataset.y = y;
+        randomGroup.dataset.width = width;
+        randomGroup.dataset.height = height;
+        
+        // Количество пикселей по каждой оси
+        const cols = Math.floor(width / this.GRID_SIZE);
+        const rows = Math.floor(height / this.GRID_SIZE);
+        
+        // Общее количество возможных пикселей
+        const totalPixels = cols * rows;
+        
+        // Количество пикселей для заполнения (не больше общего количества)
+        const pixelsToFill = Math.min(pixelsToFillInput, totalPixels);
+        
+        // Если запрошено больше пикселей чем доступно, заполняем всю область
+        if (pixelsToFillInput >= totalPixels) {
+            // Заполняем все доступные пиксели
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    const pixelX = x + i * this.GRID_SIZE;
+                    const pixelY = y + j * this.GRID_SIZE;
+                    
+                    const pixel = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                    pixel.setAttribute('x', pixelX);
+                    pixel.setAttribute('y', pixelY);
+                    pixel.setAttribute('width', this.GRID_SIZE);
+                    pixel.setAttribute('height', this.GRID_SIZE);
+                    pixel.setAttribute('fill', this.currentColor);
+                    
+                    randomGroup.appendChild(pixel);
+                }
+            }
+        } else {
+            // Создаем массив всех возможных позиций
+            const positions = [];
+            for (let i = 0; i < cols; i++) {
+                for (let j = 0; j < rows; j++) {
+                    positions.push({ i, j });
+                }
+            }
+            
+            // Случайно перемешиваем массив
+            for (let i = positions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [positions[i], positions[j]] = [positions[j], positions[i]];
+            }
+            
+            // Создаем пиксели для заполнения
+            for (let p = 0; p < pixelsToFill; p++) {
+                const pos = positions[p];
+                const pixelX = x + pos.i * this.GRID_SIZE;
+                const pixelY = y + pos.j * this.GRID_SIZE;
+                
+                const pixel = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+                pixel.setAttribute('x', pixelX);
+                pixel.setAttribute('y', pixelY);
+                pixel.setAttribute('width', this.GRID_SIZE);
+                pixel.setAttribute('height', this.GRID_SIZE);
+                pixel.setAttribute('fill', this.currentColor);
+                
+                randomGroup.appendChild(pixel);
+            }
+        }
+        
+        // Добавляем группу на SVG
+        this.shapesGroup.appendChild(randomGroup);
+        
+        // Добавляем в историю
+        this.addToHistory({
+            type: 'create',
+            element: randomGroup
+        });
+        
+        // Сохраняем состояние
+        this.saveState();
+    }
+    
+    removeRandomGroupInArea(x, y, width, height) {
+        // Ищем группы случайных пикселей
+        const randomGroups = this.shapesGroup.querySelectorAll('.random-group');
+        
+        randomGroups.forEach(group => {
+            const groupX = parseInt(group.dataset.x);
+            const groupY = parseInt(group.dataset.y);
+            const groupWidth = parseInt(group.dataset.width);
+            const groupHeight = parseInt(group.dataset.height);
+            
+            // Проверяем пересечение с новой областью
+            if (groupX < x + width && 
+                groupX + groupWidth > x && 
+                groupY < y + height && 
+                groupY + groupHeight > y) {
+                
+                // Добавляем удаление в историю
+                this.addToHistory({
+                    type: 'delete',
+                    element: group.cloneNode(true)
+                });
+                
+                // Удаляем группу
+                group.remove();
+            }
+        });
     }
 }
 
