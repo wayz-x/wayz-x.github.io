@@ -10,6 +10,6 @@ function drop(clickedElement){
     }
     // console.log(clickedElement.parentElement)
     obj.classList.toggle('hidden');
-    icn.classList.toggle('fa-minus');
-    icn.classList.toggle('fa-plus');
+    icn.classList.toggle('fa-caret-right');
+    icn.classList.toggle('fa-caret-down');
 }
