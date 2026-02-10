@@ -131,6 +131,12 @@ https://denmkit.github.io/
     white-space: nowrap
   }
 
+  .text-red {
+      color: #ff0000;
+      outline-color: #ffffff;
+      outline-width: 50px;
+    }
+
   /* BUTTON */
 
   .custom-btn {
@@ -280,6 +286,58 @@ https://denmkit.github.io/
     font-weight: var(--font-weight-bold);
   }
 
+
+  /*---------------------------------------
+    TOOLTIP          
+  -----------------------------------------*/
+.bs-popover-trigger {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.bs-popover {
+  position: fixed;
+  max-width: 280px;
+
+  background-color: var(--white-color);
+  color: var(--dark-color);
+
+  /* border: 1px solid var(--primary-color); */
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  /* font-family: var(--bs-body-font-family);
+  font-size: var(--bs-body-font-size);
+  line-height: var(--bs-body-line-height); */
+
+  z-index: 9999;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.bs-popover.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bs-popover-header {
+  padding: .5rem .75rem;
+  /* border-bottom: 1px solid var(--primary-color); */
+  font-weight: 600;
+}
+
+.bs-popover-body {
+  padding: .75rem;
+}
+
+.bs-popover-close {
+  display: block;
+  margin-top: .5rem;
+  width: 100%;
+}
 
   /*---------------------------------------
     FEATURE          
@@ -904,6 +962,10 @@ https://denmkit.github.io/
 
     .site-footer {
       text-align: center;
+    }
+
+    #assembly-img{
+      content:url("/images/cources/wide-assembly.webp");
     }
 
     #newbie-img{
